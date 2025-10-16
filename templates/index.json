@@ -86,7 +86,7 @@
         "padding-block-end": 72
       }
     },
-    "product_grid_N4LBBF": {
+    "product_grid_JDA8Ke": {
       "type": "product-grid",
       "name": "Product grid",
       "settings": {
@@ -100,6 +100,6 @@
   },
   "order": [
     "hero_jVaWmY",
-    "product_grid_N4LBBF"
+    "product_grid_JDA8Ke"
   ]
 }

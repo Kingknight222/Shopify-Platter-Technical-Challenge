@@ -1,0 +1,416 @@
+<!-- /sections/custom-banner.liquid -->
+
+<div class="product-recommendations">
+  <div class="main w-full h-full px-[128px] py-[80px] max-md:px-[24px] max-md:py-[36px]">
+    <div class="product_title w-full flex flex-row justify-between max-md:justify-center">
+      <div class="title_main_part">
+        <p class="font-[Source_Serif_Pro] font-black text-[40px] max-md:text-[24px] leading-[120%] tracking-[-0.01em]">{{ section.settings.title }}</p>
+      </div>
+      <div class="title_part flex items-center max-md:hidden">
+        <div class="flex flex-row justify-between gap-[8px] items-center">
+          <p class="font-[Poppins] font-semibold text-[14px] leading-[140%] tracking-[0.03em] text-center text-#5C553A">{{ section.settings.section_button_name }}</p>
+          <span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="#5C5532"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="product_main_part">
+      {% assign selected_collection = section.settings.collection %}
+      {% if selected_collection == blank %}
+        {% assign selected_collection = collections['all'] %}
+      {% endif %}
+
+      {% if selected_collection and selected_collection.products_count > 0 %}
+        <div
+          class="relative mt-9 max-md:mt-6"
+          id="pg-{{ section.id }}"
+          style="--pg-per-lg: {{ section.settings.per_row_desktop | default: 5 }}; --pg-per-sm: {{ section.settings.per_row_tablet | default: 3 }}; --pg-per-xs: {{ section.settings.per_row_mobile | default: 2 }};">
+          <!-- custom scrollbar (prev/next removed per requirements) -->
+          <div class="pg-track overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory">
+            <div class="pg-row inline-flex gap-6">
+              {% for product in selected_collection.products limit: 10 %}
+                <a href="{{ product.url }}" class="pg-item snap-start group block border-gray-200 rounded-lg overflow-hidden transition-shadow bg-white{% if forloop.index > 4 %} mobile-hidden{% endif %}">
+                  <div class="aspect-square bg-gray-50 overflow-hidden relative">
+                    {% render 'product-badge'
+                      , product: product %}
+                    {% if product.featured_image != blank %}
+                      {{ product.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', sizes: '(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw', alt: product.title, class: 'h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105' }}
+                    {% endif %}
+                  </div>
+                  <div class="p-3 pt-4 pb-4 flex flex-col gap-2">
+                    <h3 class="font-[Bebas_Neue] font-normal text-lg leading-[100%] tracking-[0.03em] uppercase text-black max-md:text-base">{{ product.title }}</h3>
+                    {% assign rating_val = product.metafields.custom.review_val | default: 0 %}
+                    {% assign rating_count = product.metafields.custom.reviews_count | default: 0 %}
+                    {% if rating_count > 0 and rating_val > 0 %}
+                      <div class="flex items-center gap-2" aria-label="Rating {{ rating_val }} out of 5">
+                        <div class="relative inline-block leading-none">
+                          <div class="flex1 text-gray-300 w-[68px] gap-0">
+                            {% for i in (1..5) %}
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"><path d="M10 1.5l2.79 5.65 6.24.91-4.51 4.4 1.06 6.18L10 15.85l-5.58 2.79 1.06-6.18L1 8.06l6.21-.91L10 1.5z" /></svg>
+                            {% endfor %}
+                          </div>
+                          <div class="absolute inset-0 overflow-hidden text-gray-900 w-[68px]">
+                            <div class="flex1">
+                              {% for i in (1..5) %}
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                  aria-hidden="true"><path d="M10 1.5l2.79 5.65 6.24.91-4.51 4.4 1.06 6.18L10 15.85l-5.58 2.79 1.06-6.18L1 8.06l6.21-.91L10 1.5z" /></svg>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        </div>
+                        <span class="font-[Poppins] font-normal text-[12px] leading-[100%] tracking-[0em]">{{ rating_count | format_number: decimals: 0 }} Reviews</span>
+                      </div>
+                    {% endif %}
+                    <div class="font-poppins font-medium text-[16px] leading-[100%] tracking-[0em] uppercase">{{ product.price | money }}</div>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="pg-scrollbar mt-12" aria-hidden="true">
+            <div class="pg-thumb"></div>
+          </div>
+          <!-- Mobile Show More Button -->
+          <div class="mobile-show-more mt-6 text-center sm:hidden">
+            <button type="button" class="show-more-btn bg-gray-900 text-white px-8 py-3 hover:bg-gray-800 transition-colors w-full rounded-[100px] font-poppins font-semibold text-[16px] leading-[140%] tracking-[0.03em] text-center">
+              Show More
+            </button>
+          </div>
+        </div>
+      {% else %}
+        <p class="mt-6 text-sm text-gray-500">No products found.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Product grid",
+    "settings": [
+      {
+        "type": "range",
+        "id": "per_row_desktop",
+        "min": 2,
+        "max": 6,
+        "step": 1,
+        "default": 5,
+        "label": "Products per row (desktop)"
+      },
+      {
+        "type": "range",
+        "id": "per_row_tablet",
+        "min": 2,
+        "max": 5,
+        "step": 1,
+        "default": 3,
+        "label": "Products per row (tablet)"
+      },
+      {
+        "type": "range",
+        "id": "per_row_mobile",
+        "min": 1,
+        "max": 3,
+        "step": 1,
+        "default": 2,
+        "label": "Products per row (mobile)"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading Text",
+        "default": "Best Sellers"
+      },
+      {
+        "type": "text",
+        "id": "section_button_name",
+        "label": "Section button name",
+        "default": "Shop All Best Sellers"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Product grid"
+      }
+    ]
+  }
+{% endschema %}
+
+<style>
+  /* Hide native scrollbars for this section */
+  .flex1 {
+    display: flex;
+  }
+
+  #pg-{{ section.id }}
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  #pg-{{ section.id }}
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  /* Custom scrollbar bar and thumb (minimal + responsive) */
+  #pg-{{ section.id }} .pg-track {
+    -webkit-overflow-scrolling: touch;
+  }
+  #pg-{{ section.id }}
+  .pg-scrollbar {
+    position: relative;
+    height: 4px;
+    background: #E5E7EB;
+    border-radius: 9999px;
+    transition: height 0.15s ease;
+  }
+  #pg-{{ section.id }}
+  .pg-scrollbar: hover
+  , #pg-{{ section.id }}
+  .pg-scrollbar.is-touch {
+    height: 6px;
+  }
+  #pg-{{ section.id }}
+  .pg-thumb {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: #111827;
+    border-radius: 9999px;
+    width: 25%;
+    cursor: grab;
+    transition: background-color 0.15s ease;
+    transform-origin: center;
+  }
+  #pg-{{ section.id }} .pg-thumb:hover, #pg-{{ section.id }} .pg-thumb:active {
+    background: #0B1220;
+    /* transform: scaleY(1.5) !important; */
+    height: 6px !important;
+    margin-top: -1px;
+  }
+  
+  #pg-{{ section.id }}.pg-thumb:active {
+    cursor: grabbing;
+  }
+  /* Responsive item basis from owner-configured variables */
+  #pg-{{ section.id }} .pg-item {
+    flex: 0 0 calc(100% / var(--pg-per-xs));
+  }
+  @media (min-width: 640px) {
+    #pg-{{ section.id }} .pg-item {
+      flex-basis: calc(100% / var(--pg-per-sm));
+    }
+  }
+  @media (min-width: 1024px) {
+    #pg-{{ section.id }} .pg-item {
+      flex-basis: calc(100% / var(--pg-per-lg));
+    }
+  }
+
+  /* Mobile-specific styles */
+  @media (max-width: 639px) {
+    #pg-{{ section.id }} .pg-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      overflow: visible;
+    }
+    #pg-{{ section.id }}
+    .pg-item {
+      flex: none;
+      width: 100%;
+    }
+    #pg-{{ section.id }}
+    .pg-track {
+      overflow: visible;
+    }
+    #pg-{{ section.id }}
+    .pg-scrollbar {
+      display: none;
+    }
+    #pg-{{ section.id }}
+    .mobile-hidden {
+      display: none;
+    }
+    #pg-{{ section.id }}
+    .mobile-visible {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    var root = document.getElementById('pg-{{ section.id }}');
+    if (!root) return;
+    var track = root.querySelector('.pg-track');
+    var bar = root.querySelector('.pg-scrollbar');
+    var thumb = root.querySelector('.pg-thumb');
+    if (!track || !bar || !thumb) return;
+  
+    function itemsPerView() {
+      var w = window.innerWidth;
+      var lg = parseInt(getComputedStyle(root).getPropertyValue('--pg-per-lg')) || 5;
+      var sm = parseInt(getComputedStyle(root).getPropertyValue('--pg-per-sm')) || 3;
+      var xs = parseInt(getComputedStyle(root).getPropertyValue('--pg-per-xs')) || 2;
+      if (w >= 1024) return lg; // lg
+      if (w >= 640) return sm;  // sm
+      return xs;                // mobile
+    }
+  
+    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+  
+    var rafId = null;
+    function updateThumb() {
+      var content = track.scrollWidth;
+      var viewport = track.clientWidth;
+      var ratio = viewport / content;
+      var barWidth = bar.clientWidth;
+      var thumbWidth = clamp(barWidth * ratio, 32, barWidth); // minimum 32px
+      var maxScroll = content - viewport;
+      var progress = maxScroll > 0 ? track.scrollLeft / maxScroll : 0;
+      var maxThumbLeft = barWidth - thumbWidth;
+      thumb.style.width = thumbWidth + 'px';
+      thumb.style.transform = 'translateX(' + (progress * maxThumbLeft) + 'px)';
+    }
+  
+    // Sync scrolling from content to thumb
+    function onScroll() {
+      if (dragging) return; // while dragging we drive scroll from thumb
+      if (rafId) return; // throttle to next frame
+      rafId = requestAnimationFrame(function() {
+        rafId = null;
+        updateThumb();
+      });
+    }
+    track.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateThumb);
+  
+    // Dragging logic
+    var dragging = false; var startX = 0; var startLeft = 0;
+    function onDown(e) {
+      dragging = true;
+      root.classList.add('is-dragging');
+      bar.classList.add('is-touch');
+      // disable smooth scroll while dragging
+      var prevBehavior = track.style.scrollBehavior;
+      track.style.scrollBehavior = 'auto';
+      startX = (e.touches ? e.touches[0].clientX : e.clientX);
+      var m = /translateX\(([^p]+)px\)/.exec(thumb.style.transform || '');
+      startLeft = m ? parseFloat(m[1]) : 0;
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('touchmove', onMove, { passive: false });
+      document.addEventListener('mouseup', onUp);
+      document.addEventListener('touchend', onUp);
+      thumb._prevBehavior = prevBehavior;
+    }
+    function onMove(e) {
+      if (!dragging) return;
+      if (e.cancelable) e.preventDefault();
+      var x = (e.touches ? e.touches[0].clientX : e.clientX);
+      var dx = x - startX;
+      var barWidth = bar.clientWidth;
+      var tw = thumb.clientWidth;
+      var maxLeft = barWidth - tw;
+      var left = clamp(startLeft + dx, 0, maxLeft);
+      var progress = maxLeft > 0 ? left / maxLeft : 0;
+      var maxScroll = track.scrollWidth - track.clientWidth;
+      track.scrollLeft = progress * maxScroll;
+      thumb.style.transform = 'translateX(' + left + 'px)';
+    }
+    function onUp() {
+      dragging = false;
+      root.classList.remove('is-dragging');
+      bar.classList.remove('is-touch');
+      // restore smooth scroll after drag ends
+      track.style.scrollBehavior = thumb._prevBehavior || 'smooth';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchend', onUp);
+    }
+    thumb.addEventListener('mousedown', onDown);
+    thumb.addEventListener('touchstart', onDown, { passive: true });
+  
+    // Clicking the bar moves by one viewport
+    bar.addEventListener('mousedown', function(e) {
+      if (e.target === thumb) return;
+      var rect = bar.getBoundingClientRect();
+      var clickX = e.clientX - rect.left;
+      // derive current left from transform
+      var m = /translateX\(([^p]+)px\)/.exec(thumb.style.transform || '');
+      var thumbLeft = m ? parseFloat(m[1]) : 0;
+      var goLeft = clickX < thumbLeft;
+      var perView = itemsPerView();
+      var amount = track.clientWidth / perView;
+      track.scrollBy({ left: (goLeft ? -1 : 1) * amount, behavior: 'smooth' });
+    });
+  
+    // init
+    requestAnimationFrame(updateThumb);
+    
+    // Mobile Show More functionality
+    var showMoreBtn = root.querySelector('.show-more-btn');
+    var hiddenItems = root.querySelectorAll('.mobile-hidden');
+    var isExpanded = false;
+    
+    if (showMoreBtn && hiddenItems.length > 0) {
+      showMoreBtn.addEventListener('click', function() {
+        if (!isExpanded) {
+          // Show hidden items with smooth animation
+          hiddenItems.forEach(function(item, index) {
+            setTimeout(function() {
+              item.style.display = 'block';
+              item.style.opacity = '0';
+              item.style.transform = 'translateY(-10px)';
+              item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+              
+              setTimeout(function() {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+              }, 50);
+            }, index * 100);
+          });
+          
+          showMoreBtn.textContent = 'Show Less';
+          isExpanded = true;
+        } else {
+          // Hide items with smooth animation
+          hiddenItems.forEach(function(item, index) {
+            setTimeout(function() {
+              item.style.opacity = '0';
+              item.style.transform = 'translateY(-10px)';
+              
+              setTimeout(function() {
+                item.style.display = 'none';
+              }, 300);
+            }, index * 50);
+          });
+          
+          showMoreBtn.textContent = 'Show More';
+          isExpanded = false;
+        }
+      });
+    }
+  })();
+</script>

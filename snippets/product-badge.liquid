@@ -23,10 +23,10 @@
 {%- if has_custom_label != blank -%}
   {% comment %} <div class="product-badge-wrap" style=""> {% endcomment %}
     {%- if custom_label1 != blank -%}
-      <div class="product-badge border border-black font-bebas font-normal text-[10px] max-md:text-[8px] leading-[100%] tracking-[0.06em] text-center absolute top-[12px] left-[12px] max-md:top-[4px] max-md:left-[4px] py-[4px] px-[8px] items-center " style="background:#ffffff;color:#000000;border-radius:100px;">{{ custom_label1 }}</div>
+      <div class="product-badge border border-black font-bebas font-normal text-[10px] max-md:text-[8px] leading-[100%] tracking-[0.06em] text-center absolute top-[12px] left-[12px] max-md:top-[4px] max-md:left-[4px] max-md:z-10 py-[4px] px-[8px] items-center " style="background:#ffffff;color:#000000;border-radius:100px;">{{ custom_label1 }}</div>
     {%- endif -%}
     {%- if custom_label2 != blank -%}
-      <div class="product-badge border border-black font-bebas font-normal text-[10px] max-md:text-[8px] leading-[100%] tracking-[0.06em] text-center absolute top-[12px] right-[12px] max-md:top-[4px] max-md:right-[4px] py-[4px] px-[8px] items-center" style="background:#5C7962;color:#fff;border-radius:100px;">{{ custom_label2 }}</div>
+      <div class="product-badge border border-black font-bebas font-normal text-[10px] max-md:text-[8px] leading-[100%] tracking-[0.06em] text-center absolute top-[12px] right-[12px] max-md:top-[4px] max-md:right-[4px] max-md:z-10 py-[4px] px-[8px] items-center" style="background:#5C7962;color:#fff;border-radius:100px;">{{ custom_label2 }}</div>
     {%- endif -%}
   {% comment %} </div> {% endcomment %}
 {%- endif -%}
